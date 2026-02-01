@@ -1,0 +1,232 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard do Agente - OpenClaw</title>
+    <style>
+        :root {
+            --primary: #00ff88;
+            --bg: #0d1117;
+            --card-bg: #161b22;
+            --text: #c9d1d9;
+            --text-dim: #8b949e;
+            --border: #30363d;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: var(--bg);
+            color: var(--text);
+            margin: 0;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 40px;
+            padding-bottom: 20px;
+            border-bottom: 1px solid var(--border);
+        }
+
+        h1 {
+            color: var(--primary);
+            margin: 0;
+            font-size: 24px;
+        }
+
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 20px;
+            margin-bottom: 40px;
+        }
+
+        .stat-card {
+            background: var(--card-bg);
+            padding: 20px;
+            border-radius: 12px;
+            border: 1px solid var(--border);
+        }
+
+        .stat-value {
+            font-size: 32px;
+            font-weight: bold;
+            color: #fff;
+            margin: 10px 0;
+        }
+
+        .stat-label {
+            color: var(--text-dim);
+            font-size: 14px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .transactions-section {
+            background: var(--card-bg);
+            border-radius: 12px;
+            border: 1px solid var(--border);
+            padding: 20px;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+        }
+
+        th,
+        td {
+            text-align: left;
+            padding: 15px;
+            border-bottom: 1px solid var(--border);
+        }
+
+        th {
+            color: var(--text-dim);
+            font-weight: normal;
+        }
+
+        .status-paid {
+            color: var(--primary);
+            font-weight: bold;
+        }
+
+        .status-pending {
+            color: #e3b341;
+        }
+
+        .refresh-btn {
+            background: transparent;
+            border: 1px solid var(--primary);
+            color: var(--primary);
+            padding: 8px 16px;
+            border-radius: 6px;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .refresh-btn:hover {
+            background: var(--primary);
+            color: #000;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="container">
+        <header>
+            <div>
+                <h1>🤖 OpenClaw Dashboard</h1>
+                <p style="color: var(--text-dim); margin-top: 5px;">Monitoramento de Receita em Tempo Real</p>
+            </div>
+            <button onclick="location.reload()" class="refresh-btn">🔄 Atualizar</button>
+        </header>
+
+        <div class="stats-grid">
+            <div class="stat-card">
+                <div class="stat-label">Receita Total</div>
+                <div class="stat-value" id="total-revenue">R$ 0,00</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-label">Vendas Confirmadas</div>
+                <div class="stat-value" id="total-sales">0</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-label">Aguardando Pagamento</div>
+                <div class="stat-value" id="pending-sales">0</div>
+            </div>
+        </div>
+
+        <div class="transactions-section">
+            <h2 style="margin-top: 0;">Histórico de Transações</h2>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Data</th>
+                        <th>Cliente</th>
+                        <th>Produto/Serviço</th>
+                        <th>Valor</th>
+                        <th>Status</th>
+                    </tr>
+                </thead>
+                <tbody id="sales-table">
+                    <tr>
+                        <td colspan="5" style="text-align: center; color: var(--text-dim);">Carregando dados...</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <script>
+        async function loadData() {
+            try {
+                const response = await fetch('/sales');
+                const data = await response.json();
+                const sales = data.sales.reverse(); // Mais recentes primeiro
+
+                let totalRevenue = 0;
+                let paidCount = 0;
+                let pendingCount = 0;
+                const tbody = document.getElementById('sales-table');
+                tbody.innerHTML = '';
+
+                if (sales.length === 0) {
+                    tbody.innerHTML = '<tr><td colspan="5" style="text-align: center; padding: 30px;">Nenhuma venda registrada ainda.</td></tr>';
+                    return;
+                }
+
+                sales.forEach(sale => {
+                    // Atualiza métricas
+                    if (sale.status === 'paid' || sale.status === 'CONCLUIDA') {
+                        totalRevenue += parseFloat(sale.amount);
+                        paidCount++;
+                    } else {
+                        pendingCount++;
+                    }
+
+                    // Renderiza linha
+                    const row = document.createElement('tr');
+                    const date = new Date(sale.created_at).toLocaleString('pt-BR');
+                    const statusClass = (sale.status === 'paid' || sale.status === 'CONCLUIDA') ? 'status-paid' : 'status-pending';
+                    const statusText = (sale.status === 'paid' || sale.status === 'CONCLUIDA') ? '✅ Pago' : '⏳ Aguardando';
+
+                    row.innerHTML = `
+                        <td>${date}</td>
+                        <td>${sale.customer_name || 'Anônimo'}</td>
+                        <td>${sale.product_name}</td>
+                        <td>R$ ${parseFloat(sale.amount).toFixed(2)}</td>
+                        <td class="${statusClass}">${statusText}</td>
+                    `;
+                    tbody.appendChild(row);
+                });
+
+                // Atualiza cards
+                document.getElementById('total-revenue').innerText = `R$ ${totalRevenue.toFixed(2)}`;
+                document.getElementById('total-sales').innerText = paidCount;
+                document.getElementById('pending-sales').innerText = pendingCount;
+
+            } catch (error) {
+                console.error('Erro ao carregar dashboard:', error);
+                document.getElementById('sales-table').innerHTML = '<tr><td colspan="5" style="color: #ff5555; text-align: center;">Erro ao carregar dados. Verifique a conexão.</td></tr>';
+            }
+        }
+
+        // Carrega ao iniciar
+        loadData();
+        // Atualiza a cada 30 segundos
+        setInterval(loadData, 30000);
+    </script>
+</body>
+
+</html>

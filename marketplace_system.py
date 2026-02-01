@@ -99,6 +99,11 @@ def marketplace():
     """Página principal do marketplace"""
     return render_template('marketplace.html', products=PRODUCTS)
 
+@app.route('/dashboard')
+def dashboard():
+    """Painel administrativo de vendas"""
+    return render_template('dashboard.html')
+
 @app.route('/product/<product_id>')
 def product_details(product_id):
     """Detalhes de um produto específico"""
