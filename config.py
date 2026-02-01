@@ -68,10 +68,11 @@ class EfiConfig:
         self.webhook_url = os.getenv('EFI_WEBHOOK_URL', 'http://localhost:5000/webhook/efi')
         
         # API URLs
+        # API URLs
         if self.sandbox:
-            self.base_url = "https://api-pix-h.gerencianet.com.br"
+            self.base_url = "https://pix-h.api.efipay.com.br"
         else:
-            self.base_url = "https://api-pix.gerencianet.com.br"
+            self.base_url = "https://pix.api.efipay.com.br"
     
     def validate(self):
         """Validate that all required configuration is present"""

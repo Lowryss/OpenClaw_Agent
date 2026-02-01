@@ -43,9 +43,9 @@ class EfiPaymentSystem:
             self.pix_key = pix_key
             
             if self.sandbox:
-                self.base_url = "https://api-pix-h.gerencianet.com.br"
+                self.base_url = "https://pix-h.api.efipay.com.br"
             else:
-                self.base_url = "https://api-pix.gerencianet.com.br"
+                self.base_url = "https://pix.api.efipay.com.br"
         
         self.access_token = None
         self.session = self._create_session()
