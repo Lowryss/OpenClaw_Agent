@@ -15,8 +15,34 @@ class EfiConfig:
         self.client_secret = os.getenv('EFI_CLIENT_SECRET')
         
         # Certificate
-        self.certificate_path = os.getenv('EFI_CERTIFICATE_PATH', 'producao-872278-clawdbot.p12')
+        self.certificate_path = os.getenv('EFI_CERTIFICATE_PATH', 'producao-872278-clawdbot.pem')
         self.certificate_password = os.getenv('EFI_CERTIFICATE_PASSWORD', '')
+
+        # Recriar certificado a partir de variável de ambiente (para Railway/Heroku)
+        cert_content = os.getenv('EFI_CERTIFICATE_CONTENT')
+        if cert_content:
+            # Se o caminho for relativo, resolve para absoluto
+            cert_file = Path(self.certificate_path)
+            if not cert_file.is_absolute():
+                cert_file = Path(__file__).parent / self.certificate_path
+            
+            # Se arquivo não existe, cria
+            if not cert_file.exists():
+                try:
+                    print(f"📝 Recriando certificado em: {cert_file}")
+                    # Remove aspas extras se houver e corrige quebras de linha
+                    clean_content = cert_content.strip()
+                    if clean_content.startswith('"') and clean_content.endswith('"'):
+                        clean_content = clean_content[1:-1]
+                    
+                    # Substitui \\n por \n reais se vier escapado
+                    clean_content = clean_content.replace('\\n', '\n')
+                        
+                    with open(cert_file, 'w') as f:
+                        f.write(clean_content)
+                    print(f"✅ Certificado recriado com sucesso!")
+                except Exception as e:
+                    print(f"❌ Erro ao recriar certificado: {e}")
         
         # PIX Key
         self.pix_key = os.getenv('EFI_PIX_KEY')
