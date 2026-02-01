@@ -3,6 +3,10 @@
 moltbook_credentials.json
 producao-*-clawdbot.pem
 *.pem
+prompts/
+CERTIFICADO*.txt
+TODAS_VARIAVEIS.txt
+*.p12
 credentials.json
 
 # Diretórios temporários e de build
