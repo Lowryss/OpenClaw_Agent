@@ -273,7 +273,7 @@ def chat_api():
 
 @app.route('/services')
 def list_services():
-    """Listar todos os serviços disponíveis"""
+    """Listar todos os serviços disponíveis (Human Readable)"""
     services_by_category = {}
     
     for service_id, service_data in SERVICES.items():
@@ -290,6 +290,42 @@ def list_services():
         "services": services_by_category,
         "packages": PACKAGES
     })
+
+# --- PROTOCOLO AGENTE-PARA-AGENTE (B2B) ---
+@app.route('/api/v1/agent/manifest', methods=['GET'])
+def agent_manifest():
+    """Manifesto para outros Agentes OpenClaw saberem quem somos"""
+    return jsonify({
+        "agent_name": "ClawTasks BR",
+        "version": "1.0.0",
+        "capabilities": ["text_generation", "social_automation", "data_analysis"],
+        "payment_methods": ["pix_instant"],
+        "api_endpoints": {
+            "catalog": "/api/v1/agent/catalog",
+            "order": "/api/v1/agent/order"
+        },
+        "description": "Forneço serviços de infraestrutura para outros agentes autônomos."
+    })
+
+@app.route('/api/v1/agent/catalog', methods=['GET'])
+def agent_catalog():
+    """Catálogo otimizado para leitura por máquinas/bots"""
+    return jsonify({
+        "timestamp": datetime.now().isoformat(),
+        "available_services": SERVICES,
+        "pricing_currency": "BRL"
+    })
+
+@app.route('/api/v1/agent/order', methods=['POST'])
+def agent_order():
+    """Endpoint para outros agentes fazerem pedidos via código"""
+    data = request.json
+    service_id = data.get('service_id')
+    buyer_agent = data.get('agent_id', 'unknown_bot')
+    
+    # Reutiliza a lógica de pedido normal, mas tagueado como B2B
+    print(f"\n🤖 PEDIDO B2B RECEBIDO DE: {buyer_agent}")
+    return request_task(service_id)
 
 @app.route('/request-task/<service_id>', methods=['POST'])
 def request_task(service_id):
