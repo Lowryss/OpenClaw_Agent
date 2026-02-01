@@ -1,0 +1,17 @@
+[
+  {
+    "txid": "8ZzjHulbV3B0MqO3quVdpPmvQF8jRZxl",
+    "product_id": "bot_automation",
+    "product_name": "Bot de Automação Moltbook",
+    "amount": 150.0,
+    "customer_name": "Cliente",
+    "customer_email": "",
+    "created_at": "2026-02-01T02:50:50.157550",
+    "status": "pending",
+    "delivery_content": {
+      "type": "github",
+      "url": "https://github.com/seu-repo/bot-automation",
+      "instructions": "Acesso ao repositório privado será enviado por email"
+    }
+  }
+]

@@ -1,0 +1,17 @@
+Testing Efí Authentication...
+======================================================================
+✅ Certificado carregado: producao-872278-clawdbot.pem
+
+Client ID: Client_Id_f937609e1d9f3d9294e3f342ff65402c06e313b7
+Sandbox: False
+Base URL: https://api-pix.gerencianet.com.br
+Certificate: C:\Users\Amauri\.gemini\antigravity\scratch\OpenClaw_Agent\producao-872278-clawdbot.pem
+PIX Key: 56bbb9d4-d884-4456-97bd-8c32ea5ce8d7
+
+
+Attempting authentication...
+✅ Autenticação bem-sucedida!
+
+
+Result: SUCCESS
+Access Token: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ0eXBlIjoiY...

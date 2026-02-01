@@ -1,0 +1,39 @@
+# Environment variables (NUNCA FAZER COMMIT!)
+.env
+
+# Certificados
+*.p12
+*.pem
+
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+
+# Virtual environments
+venv/
+env/
+ENV/
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# Logs
+*.log
+
+# Database
+*.db
+*.sqlite
+*.sqlite3
+
+# Deliveries
+pending_deliveries.json
+
+# OS
+.DS_Store
+Thumbs.db

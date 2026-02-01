@@ -1,0 +1,544 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ClawTasks BR - Marketplace de Tarefas Automatizadas</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #0f2027 0%, #203a43 50%, #2c5364 100%);
+            min-height: 100vh;
+            padding: 20px;
+            color: white;
+        }
+
+        .container {
+            max-width: 1600px;
+            margin: 0 auto;
+        }
+
+        header {
+            text-align: center;
+            margin-bottom: 50px;
+        }
+
+        header h1 {
+            font-size: 3.5rem;
+            margin-bottom: 15px;
+            text-shadow: 3px 3px 6px rgba(0, 0, 0, 0.5);
+            background: linear-gradient(90deg, #00d4ff, #00ff88);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        header p {
+            font-size: 1.3rem;
+            opacity: 0.9;
+            margin-bottom: 10px;
+        }
+
+        .stats {
+            display: flex;
+            justify-content: center;
+            gap: 30px;
+            margin: 30px 0;
+            flex-wrap: wrap;
+        }
+
+        .stat-card {
+            background: rgba(255, 255, 255, 0.1);
+            padding: 20px 30px;
+            border-radius: 15px;
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+        }
+
+        .stat-card h3 {
+            font-size: 2rem;
+            color: #00ff88;
+        }
+
+        .stat-card p {
+            opacity: 0.8;
+            margin-top: 5px;
+        }
+
+        .tabs {
+            display: flex;
+            justify-content: center;
+            gap: 15px;
+            margin: 40px 0;
+            flex-wrap: wrap;
+        }
+
+        .tab-btn {
+            padding: 15px 30px;
+            background: rgba(255, 255, 255, 0.1);
+            border: 2px solid rgba(255, 255, 255, 0.3);
+            border-radius: 10px;
+            color: white;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-size: 1.1rem;
+        }
+
+        .tab-btn:hover,
+        .tab-btn.active {
+            background: rgba(0, 212, 255, 0.3);
+            border-color: #00d4ff;
+            transform: translateY(-2px);
+        }
+
+        .services-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
+            gap: 25px;
+            margin-bottom: 50px;
+        }
+
+        .service-card {
+            background: rgba(255, 255, 255, 0.08);
+            border-radius: 20px;
+            padding: 30px;
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.15);
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .service-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 4px;
+            background: linear-gradient(90deg, #00d4ff, #00ff88);
+        }
+
+        .service-card:hover {
+            transform: translateY(-8px);
+            box-shadow: 0 20px 40px rgba(0, 212, 255, 0.3);
+            border-color: rgba(0, 212, 255, 0.5);
+        }
+
+        .category-badge {
+            display: inline-block;
+            padding: 6px 16px;
+            background: rgba(0, 212, 255, 0.2);
+            border: 1px solid #00d4ff;
+            border-radius: 20px;
+            font-size: 0.85rem;
+            margin-bottom: 15px;
+            text-transform: uppercase;
+            font-weight: bold;
+        }
+
+        .service-card h3 {
+            font-size: 1.6rem;
+            margin-bottom: 12px;
+            color: #00ff88;
+        }
+
+        .service-card .description {
+            opacity: 0.85;
+            margin-bottom: 20px;
+            line-height: 1.6;
+        }
+
+        .price-tag {
+            font-size: 2.5rem;
+            font-weight: bold;
+            background: linear-gradient(90deg, #00d4ff, #00ff88);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            margin: 20px 0;
+        }
+
+        .delivery-time {
+            background: rgba(0, 255, 136, 0.15);
+            padding: 10px 15px;
+            border-radius: 8px;
+            margin: 15px 0;
+            font-size: 0.95rem;
+            border-left: 3px solid #00ff88;
+        }
+
+        .request-btn {
+            width: 100%;
+            padding: 16px;
+            background: linear-gradient(90deg, #00d4ff, #00ff88);
+            color: #0f2027;
+            border: none;
+            border-radius: 12px;
+            font-size: 1.15rem;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            margin-top: 15px;
+        }
+
+        .request-btn:hover {
+            transform: scale(1.02);
+            box-shadow: 0 10px 30px rgba(0, 212, 255, 0.5);
+        }
+
+        .packages-section {
+            margin: 60px 0;
+        }
+
+        .packages-section h2 {
+            text-align: center;
+            font-size: 2.5rem;
+            margin-bottom: 40px;
+            background: linear-gradient(90deg, #00d4ff, #00ff88);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .packages-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(400px, 1fr));
+            gap: 30px;
+        }
+
+        .package-card {
+            background: rgba(255, 255, 255, 0.05);
+            border: 2px solid rgba(0, 212, 255, 0.3);
+            border-radius: 25px;
+            padding: 40px;
+            position: relative;
+        }
+
+        .package-card.featured {
+            border-color: #00ff88;
+            background: rgba(0, 255, 136, 0.08);
+        }
+
+        .savings-badge {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            background: #ff4757;
+            color: white;
+            padding: 8px 16px;
+            border-radius: 20px;
+            font-weight: bold;
+        }
+
+        footer {
+            text-align: center;
+            margin-top: 80px;
+            opacity: 0.7;
+        }
+
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.9);
+            z-index: 1000;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .modal.active {
+            display: flex;
+        }
+
+        .modal-content {
+            background: #1a2a3a;
+            border-radius: 25px;
+            padding: 45px;
+            max-width: 600px;
+            width: 90%;
+            max-height: 90vh;
+            overflow-y: auto;
+            border: 2px solid rgba(0, 212, 255, 0.3);
+        }
+
+        .close-btn {
+            float: right;
+            font-size: 2.5rem;
+            cursor: pointer;
+            color: #00d4ff;
+        }
+
+        .qr-container {
+            text-align: center;
+            margin: 30px 0;
+        }
+
+        .qr-container img {
+            max-width: 320px;
+            border: 3px solid #00d4ff;
+            border-radius: 15px;
+            padding: 15px;
+            background: white;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="container">
+        <header>
+            <h1>🎯 ClawTasks BR</h1>
+            <p>Marketplace de Tarefas Automatizadas</p>
+            <p style="font-size: 1rem; margin-top: 10px;">💳 Pagamento via PIX • Execução Automática • Entrega Garantida
+            </p>
+
+            <div class="stats">
+                <div class="stat-card">
+                    <h3>18</h3>
+                    <p>Serviços Disponíveis</p>
+                </div>
+                <div class="stat-card">
+                    <h3>R$ 10-250</h3>
+                    <p>Faixa de Preços</p>
+                </div>
+                <div class="stat-card">
+                    <h3>24/7</h3>
+                    <p>Execução Automática</p>
+                </div>
+            </div>
+        </header>
+
+        <div class="tabs">
+            <button class="tab-btn active" onclick="filterServices('all')">Todos</button>
+            <button class="tab-btn" onclick="filterServices('automation')">Automação</button>
+            <button class="tab-btn" onclick="filterServices('content')">Conteúdo IA</button>
+            <button class="tab-btn" onclick="filterServices('analytics')">Análise</button>
+            <button class="tab-btn" onclick="filterServices('engagement')">Engajamento</button>
+            <button class="tab-btn" onclick="filterServices('scraping')">Scraping</button>
+            <button class="tab-btn" onclick="filterServices('monitoring')">Monitoramento</button>
+        </div>
+
+        <div class="services-grid" id="servicesGrid">
+            <!-- Services loaded here -->
+        </div>
+
+        <div class="packages-section">
+            <h2>🎁 Pacotes Combo - Economize Mais!</h2>
+            <div class="packages-grid" id="packagesGrid">
+                <!-- Packages loaded here -->
+            </div>
+        </div>
+
+        <footer>
+            <p>💳 Pagamentos processados via Efí (Gerencianet)</p>
+            <p>🤖 Execução 100% automatizada</p>
+            <p style="margin-top: 15px;">Dúvidas? contato@clawtasksbr.com</p>
+        </footer>
+    </div>
+
+    <div class="modal" id="requestModal">
+        <div class="modal-content">
+            <span class="close-btn" onclick="closeModal()">&times;</span>
+            <div id="modalContent"></div>
+        </div>
+    </div>
+
+    <script>
+        let allServices = {};
+        let currentFilter = 'all';
+
+        async function loadServices() {
+            try {
+                const response = await fetch('/services');
+                const data = await response.json();
+                allServices = data.services;
+
+                displayServices();
+                displayPackages(data.packages);
+            } catch (error) {
+                console.error('Error loading services:', error);
+            }
+        }
+
+        function displayServices() {
+            const grid = document.getElementById('servicesGrid');
+            grid.innerHTML = '';
+
+            for (const [category, services] of Object.entries(allServices)) {
+                if (currentFilter !== 'all' && currentFilter !== category) continue;
+
+                services.forEach(service => {
+                    const card = document.createElement('div');
+                    card.className = 'service-card';
+                    card.setAttribute('data-category', category);
+
+                    const categoryEmojis = {
+                        'automation': '🤖',
+                        'content': '✍️',
+                        'analytics': '📊',
+                        'engagement': '❤️',
+                        'scraping': '🕷️',
+                        'monitoring': '👁️'
+                    };
+
+                    card.innerHTML = `
+                        <span class="category-badge">
+                            ${categoryEmojis[category]} ${category.toUpperCase()}
+                        </span>
+                        <h3>${service.name}</h3>
+                        <p class="description">${service.description}</p>
+                        <div class="price-tag">R$ ${service.price.toFixed(2)}</div>
+                        <div class="delivery-time">
+                            ⚡ Entrega: ${service.delivery_time}
+                        </div>
+                        <button class="request-btn" onclick="requestTask('${service.id}')">
+                            💳 Solicitar Tarefa
+                        </button>
+                    `;
+
+                    grid.appendChild(card);
+                });
+            }
+        }
+
+        function displayPackages(packages) {
+            const grid = document.getElementById('packagesGrid');
+            grid.innerHTML = '';
+
+            for (const [pkgId, pkg] of Object.entries(packages)) {
+                const card = document.createElement('div');
+                card.className = 'package-card';
+                if (pkgId === 'growth') card.classList.add('featured');
+
+                card.innerHTML = `
+                    <div class="savings-badge">Economize R$ ${pkg.savings.toFixed(2)}</div>
+                    <h3 style="color: #00ff88; font-size: 2rem; margin-bottom: 15px;">${pkg.name}</h3>
+                    <p style="opacity: 0.85; margin-bottom: 25px;">${pkg.description}</p>
+                    <div style="text-decoration: line-through; opacity: 0.6; margin-bottom: 10px;">
+                        De: R$ ${pkg.original_price.toFixed(2)}
+                    </div>
+                    <div style="font-size: 3rem; font-weight: bold; color: #00d4ff; margin-bottom: 25px;">
+                        R$ ${pkg.price.toFixed(2)}
+                    </div>
+                    <div style="background: rgba(255,255,255,0.05); padding: 20px; border-radius: 12px; margin-bottom: 20px;">
+                        <strong>Inclui:</strong>
+                        <ul style="margin-top: 10px; margin-left: 20px; line-height: 1.8;">
+                            ${pkg.services.map(s => `<li>${getServiceName(s)}</li>`).join('')}
+                        </ul>
+                    </div>
+                    <button class="request-btn" onclick="requestPackage('${pkgId}')">
+                        🎁 Comprar Pacote
+                    </button>
+                `;
+
+                grid.appendChild(card);
+            }
+        }
+
+        function getServiceName(serviceId) {
+            for (const services of Object.values(allServices)) {
+                const service = services.find(s => s.id === serviceId);
+                if (service) return service.name;
+            }
+            return serviceId;
+        }
+
+        function filterServices(category) {
+            currentFilter = category;
+
+            document.querySelectorAll('.tab-btn').forEach(btn => {
+                btn.classList.remove('active');
+            });
+            event.target.classList.add('active');
+
+            displayServices();
+        }
+
+        async function requestTask(serviceId) {
+            const modal = document.getElementById('requestModal');
+            const content = document.getElementById('modalContent');
+
+            modal.classList.add('active');
+            content.innerHTML = `
+                <h2 style="color: #00ff88; margin-bottom: 25px;">Solicitar Tarefa</h2>
+                <div style="text-align: center; padding: 40px;">
+                    <div style="font-size: 3rem; margin-bottom: 20px;">⏳</div>
+                    <p>Gerando QR Code PIX...</p>
+                </div>
+            `;
+
+            try {
+                const response = await fetch(`/request-task/${serviceId}`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        customer_name: 'Cliente',
+                        customer_email: 'cliente@email.com'
+                    })
+                });
+
+                const data = await response.json();
+
+                if (data.success) {
+                    content.innerHTML = `
+                        <h2 style="color: #00ff88;">${data.service}</h2>
+                        <p style="font-size: 1.5rem; color: #00d4ff; margin: 20px 0;">
+                            R$ ${data.price.toFixed(2)}
+                        </p>
+
+                        <div class="qr-container">
+                            <img src="${data.qr_code_image}" alt="QR Code PIX">
+                        </div>
+
+                        <div style="background: rgba(0,212,255,0.1); padding: 20px; border-radius: 12px; margin: 25px 0; border-left: 4px solid #00d4ff;">
+                            <strong>⚡ Entrega: ${data.delivery_time}</strong>
+                            <p style="margin-top: 10px; opacity: 0.85;">
+                                Após confirmar o pagamento, a tarefa será executada automaticamente!
+                            </p>
+                        </div>
+
+                        <p style="text-align: center; margin-top: 20px; opacity: 0.7; font-size: 0.9rem;">
+                            Task ID: ${data.task_id}
+                        </p>
+                    `;
+                } else {
+                    content.innerHTML = `
+                        <div style="text-align: center; padding: 40px; color: #ff4757;">
+                            <h3>❌ Erro</h3>
+                            <p style="margin-top: 15px;">${JSON.stringify(data)}</p>
+                        </div>
+                    `;
+                }
+            } catch (error) {
+                content.innerHTML = `
+                    <div style="text-align: center; padding: 40px; color: #ff4757;">
+                        <h3>❌ Erro</h3>
+                        <p style="margin-top: 15px;">${error.message}</p>
+                    </div>
+                `;
+            }
+        }
+
+        function requestPackage(packageId) {
+            alert('Funcionalidade de pacotes em desenvolvimento!');
+        }
+
+        function closeModal() {
+            document.getElementById('requestModal').classList.remove('active');
+        }
+
+        loadServices();
+    </script>
+</body>
+
+</html>
