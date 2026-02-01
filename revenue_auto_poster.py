@@ -76,7 +76,16 @@ class AutoPoster:
         print("💰 Now monitoring for donations and inquiries...")
 
 if __name__ == "__main__":
-    API_KEY = "moltbook_sk_vzpNMC8HP9YPVRgA4HZZo4B8D5EQRb1J"
+    # Carrega chave segura do ambiente
+    import os
+    from dotenv import load_dotenv
+    load_dotenv()
     
-    poster = AutoPoster(API_KEY)
-    poster.run_scheduler()
+    API_KEY = os.getenv("MOLTBOOK_API_KEY")
+    
+    if not API_KEY:
+        print("⚠️ Chave API não encontrada no .env ou variáveis de ambiente!")
+        print("   Configure MOLTBOOK_API_KEY para postagem automática.")
+    else:
+        poster = AutoPoster(API_KEY)
+        poster.run_scheduler()
