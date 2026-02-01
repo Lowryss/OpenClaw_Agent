@@ -1,0 +1,183 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Chat com OpenClaw Agent</title>
+    <style>
+        :root {
+            --primary: #00ff88;
+            --bg: #0d1117;
+            --chat-bg: #161b22;
+            --user-msg: #238636;
+            --bot-msg: #30363d;
+            --text: #c9d1d9;
+        }
+
+        body {
+            font-family: 'Segoe UI', sans-serif;
+            background-color: var(--bg);
+            color: var(--text);
+            margin: 0;
+            height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
+
+        header {
+            padding: 20px;
+            border-bottom: 1px solid #30363d;
+            background: var(--chat-bg);
+            text-align: center;
+        }
+
+        h1 {
+            margin: 0;
+            color: var(--primary);
+            font-size: 1.5rem;
+        }
+
+        .status {
+            font-size: 0.8rem;
+            color: #8b949e;
+        }
+
+        .status.online {
+            color: #00ff88;
+        }
+
+        #chat-container {
+            flex: 1;
+            overflow-y: auto;
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+        }
+
+        .message {
+            max-width: 80%;
+            padding: 12px 18px;
+            border-radius: 12px;
+            line-height: 1.5;
+        }
+
+        .message.user {
+            align-self: flex-end;
+            background-color: var(--user-msg);
+            color: white;
+            border-bottom-right-radius: 2px;
+        }
+
+        .message.bot {
+            align-self: flex-start;
+            background-color: var(--bot-msg);
+            border-bottom-left-radius: 2px;
+        }
+
+        .input-area {
+            padding: 20px;
+            background: var(--chat-bg);
+            border-top: 1px solid #30363d;
+            display: flex;
+            gap: 10px;
+        }
+
+        input {
+            flex: 1;
+            padding: 12px;
+            border-radius: 6px;
+            border: 1px solid #30363d;
+            background: #0d1117;
+            color: white;
+            outline: none;
+        }
+
+        input:focus {
+            border-color: var(--primary);
+        }
+
+        button {
+            padding: 12px 24px;
+            background: var(--primary);
+            color: #000;
+            border: none;
+            border-radius: 6px;
+            font-weight: bold;
+            cursor: pointer;
+        }
+
+        button:hover {
+            opacity: 0.9;
+        }
+    </style>
+</head>
+
+<body>
+    <header>
+        <h1>🤖 OpenClaw Agent</h1>
+        <div class="status online">● Online e Operante</div>
+    </header>
+
+    <div id="chat-container">
+        <div class="message bot">
+            Olá! Eu sou o OpenClaw, seu agente de automação. 🤖<br>
+            Posso ajudar a criar posts, analisar dados ou monitorar redes sociais.<br><br>
+            O que você precisa hoje?
+        </div>
+    </div>
+
+    <form class="input-area" onsubmit="sendMessage(event)">
+        <input type="text" id="userInput" placeholder="Digite seu pedido aqui..." autocomplete="off">
+        <button type="submit">Enviar</button>
+    </form>
+
+    <script>
+        async function sendMessage(e) {
+            e.preventDefault();
+            const input = document.getElementById('userInput');
+            const text = input.value.trim();
+
+            if (!text) return;
+
+            // Adicionar mensagem do usuário
+            addMessage(text, 'user');
+            input.value = '';
+
+            // Loading do bot
+            const loadingId = addMessage('Processando...', 'bot');
+
+            try {
+                const response = await fetch('/api/chat', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ message: text })
+                });
+
+                const data = await response.json();
+
+                // Remover loading e mostrar resposta
+                document.getElementById(loadingId).remove();
+                addMessage(data.response, 'bot');
+
+            } catch (error) {
+                document.getElementById(loadingId).innerText = "❌ Erro ao conectar com o agente.";
+            }
+        }
+
+        function addMessage(text, sender) {
+            const div = document.createElement('div');
+            div.className = `message ${sender}`;
+            div.id = 'msg-' + Date.now();
+            div.innerHTML = text.replace(/\n/g, '<br>');
+
+            const container = document.getElementById('chat-container');
+            container.appendChild(div);
+            container.scrollTop = container.scrollHeight;
+            return div.id;
+        }
+    </script>
+</body>
+
+</html>

@@ -104,6 +104,29 @@ def dashboard():
     """Painel administrativo de vendas"""
     return render_template('dashboard.html')
 
+@app.route('/chat')
+def chat_interface():
+    """Interface de Chat do Agente"""
+    return render_template('chat.html')
+
+@app.route('/api/chat', methods=['POST'])
+def chat_api():
+    """API para processar mensagens do chat"""
+    data = request.json
+    user_msg = data.get('message', '').lower()
+    
+    # Lógica simples de resposta (Simulando IA)
+    if 'post' in user_msg or 'instagram' in user_msg:
+        response = "Posso criar posts para você! 📝<br>Temos pacotes a partir de R$ 20,00.<br><a href='/buy/auto_posts_10' style='color:#00ff88'>Clique aqui para comprar o pacote de 10 posts.</a>"
+    elif 'analise' in user_msg or 'dados' in user_msg:
+        response = "Precisa de insights? 📊<br>Eu analiso seus dados e entrego um relatório completo.<br><a href='/buy/analytics_basic' style='color:#00ff88'>Ver Pacote de Análise (R$ 30)</a>"
+    elif 'ajuda' in user_msg:
+        response = "Comandos disponíveis:<br>- Criar posts<br>- Analisar dados<br>- Monitorar concorrentes<br>- Status do sistema"
+    else:
+        response = "Entendi. Para executar essa tarefa, preciso que você escolha um dos nossos <a href='/' style='color:#00ff88'>Serviços de Automação</a>.<br>Posso te ajudar a escolher o melhor pacote?"
+        
+    return jsonify({"response": response})
+
 @app.route('/product/<product_id>')
 def product_details(product_id):
     """Detalhes de um produto específico"""
