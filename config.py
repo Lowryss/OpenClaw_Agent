@@ -30,6 +30,20 @@ class EfiConfig:
             if not cert_file.exists():
                 try:
                     print(f"📝 Recriando certificado em: {cert_file}")
+                    
+                    # Tenta decodificar base64 se não parecer um certificado PEM normal (para evitar problemas de quebra de linha no copy-paste)
+                    if "-----BEGIN" not in cert_content:
+                        import base64
+                        try:
+                            # Remove espaços em branco extras que podem quebrar o base64
+                            b64_clean = cert_content.strip().replace(' ', '').replace('\n', '').replace('\r', '')
+                            decoded = base64.b64decode(b64_clean).decode('utf-8')
+                            if "-----BEGIN" in decoded:
+                                cert_content = decoded
+                                print("✅ Conteúdo Base64 detectado e decodificado.")
+                        except Exception as e:
+                            print(f"⚠️ Tentativa de decode Base64 falhou (assumindo texto plano): {e}")
+
                     # Remove aspas extras se houver e corrige quebras de linha
                     clean_content = cert_content.strip()
                     if clean_content.startswith('"') and clean_content.endswith('"'):
