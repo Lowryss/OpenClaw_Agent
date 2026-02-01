@@ -1,39 +1,33 @@
-# Environment variables (NUNCA FAZER COMMIT!)
+# Arquivos de ambiente e credenciais (NUNCA COMMITAR)
 .env
-
-# Certificados
-*.p12
+moltbook_credentials.json
+producao-*-clawdbot.pem
 *.pem
+credentials.json
 
-# Python
+# Diretórios temporários e de build
 __pycache__/
-*.py[cod]
-*$py.class
-*.so
-.Python
-
-# Virtual environments
-venv/
-env/
-ENV/
-
-# IDE
-.vscode/
-.idea/
-*.swp
-*.swo
-
-# Logs
+*.pyc
 *.log
+venv/
+.idea/
+.vscode/
 
-# Database
-*.db
-*.sqlite
-*.sqlite3
-
-# Deliveries
+# Arquivos de dados locais
+tasks_queue.json
+completed_tasks.json
+sales_history.json
 pending_deliveries.json
+processed_webhooks.json
 
-# OS
-.DS_Store
-Thumbs.db
+# Outputs gerados
+generated/
+reports/
+logs/
+monitors/
+scraped/
+schedules/
+
+# Arquivos temporários de marketing
+marketing_posts_*.txt
+railway_env.txt
