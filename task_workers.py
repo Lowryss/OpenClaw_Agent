@@ -1,17 +1,91 @@
 # Workers Automatizados - ClawTasks BR
 # Executam tarefas automaticamente após pagamento confirmado
 
-from moltbook_intelligence import MoltbookIntelligence
 import json
 import time
 from datetime import datetime, timedelta
 import random
+import smtplib
+from email.mime.text import MIMEText
+from email.mime.multipart import MIMEMultipart
+from email.mime.application import MIMEApplication
+import os
+from moltbook_intelligence import MoltbookIntelligence
 
 class TaskWorkers:
     """Gerenciador de workers automatizados"""
     
     def __init__(self):
         self.moltbook = MoltbookIntelligence()
+
+    def send_delivery_email(self, task_data, result):
+        """Enviar e-mail de entrega para o cliente"""
+        to_email = task_data.get('customer_email')
+        if not to_email:
+            print("⚠️ Sem e-mail de cliente para envio.")
+            return False
+            
+        subject = f"✅ Entrega Concluída: {task_data.get('service_id')} - ClawTasks BR"
+        
+        body = f"""
+        <html>
+        <body style="font-family: Arial, sans-serif; color: #333;">
+            <div style="background-color: #0d1117; color: #c9d1d9; padding: 20px; border-radius: 8px;">
+                <h2 style="color: #00ff88;">Sua tarefa foi concluída! 🚀</h2>
+                <p>Olá, <strong>{task_data.get('customer_name', 'Cliente')}</strong>.</p>
+                <p>O robô do <strong>ClawTasks BR</strong> finalizou o serviço solicitado.</p>
+                
+                <div style="background-color: #161b22; padding: 15px; border-radius: 4px; margin: 20px 0;">
+                    <p><strong>Serviço:</strong> {task_data.get('service_id')}</p>
+                    <p><strong>Status:</strong> {result.get('status', 'Concluído')}</p>
+                    <p><strong>Detalhes:</strong> {json.dumps(result, indent=2, ensure_ascii=False)}</p>
+                </div>
+
+                <p>Seus arquivos/relatórios foram gerados e estão arquivados em nosso servidor.</p>
+                <p>Obrigado pela preferência!</p>
+                <br>
+                <p style="font-size: 12px; color: #8b949e;">Este e-mail foi enviado automaticamente pelo ClawTasks Agent.</p>
+            </div>
+        </body>
+        </html>
+        """
+        
+        sender_email = os.getenv('EMAIL_USER')
+        sender_password = os.getenv('EMAIL_PASSWORD')
+        
+        if not sender_email or not sender_password:
+            print("⚠️ Credenciais de E-mail (EMAIL_USER/EMAIL_PASSWORD) não configuradas.")
+            print("   O sistema gerou o produto mas não pôde enviar o e-mail.")
+            return False
+            
+        try:
+            msg = MIMEMultipart()
+            msg['From'] = f"ClawTasks Agent <{sender_email}>"
+            msg['To'] = to_email
+            msg['Subject'] = subject
+            msg.attach(MIMEText(body, 'html'))
+            
+            # Anexar arquivo se houver (JSON ou Relatório)
+            file_to_attach = result.get('output_file') or result.get('report_file') or result.get('log_file') or result.get('schedule_file')
+            
+            if file_to_attach and os.path.exists(file_to_attach):
+                with open(file_to_attach, "rb") as f:
+                    part = MIMEApplication(f.read(), Name=os.path.basename(file_to_attach))
+                part['Content-Disposition'] = f'attachment; filename="{os.path.basename(file_to_attach)}"'
+                msg.attach(part)
+                print(f"📎 Anexo adicionado: {file_to_attach}")
+            
+            # Conexão SMTP Gmail
+            with smtplib.SMTP_SSL('smtp.gmail.com', 465) as server:
+                server.login(sender_email, sender_password)
+                server.send_message(msg)
+                
+            print(f"📧 E-mail de entrega enviado com sucesso para {to_email}!")
+            return True
+            
+        except Exception as e:
+            print(f"❌ Erro ao enviar e-mail: {e}")
+            return False
     
     # ==================== POST SCHEDULER ====================
     
@@ -402,7 +476,15 @@ def execute_worker(task_data):
     }
     
     if worker_type in worker_map:
-        return worker_map[worker_type](task_data)
+        # Executa o worker
+        result = worker_map[worker_type](task_data)
+        
+        # Tenta enviar e-mail de entrega
+        if result and not result.get('error'):
+            print("   📨 Iniciando processo de entrega por e-mail...")
+            workers.send_delivery_email(task_data, result)
+            
+        return result
     else:
         return {"error": f"Worker '{worker_type}' não encontrado"}
 
