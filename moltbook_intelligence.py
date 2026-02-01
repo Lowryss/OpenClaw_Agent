@@ -154,10 +154,18 @@ class MoltbookIntelligence:
         return engaged
 
 if __name__ == "__main__":
-    # Initialize with your API key
-    API_KEY = "moltbook_sk_vzpNMC8HP9YPVRgA4HZZo4B8D5EQRb1J"
+    # Carrega chave segura do ambiente
+    import os
+    from dotenv import load_dotenv
+    load_dotenv()
     
-    intel = MoltbookIntelligence(API_KEY)
+    API_KEY = os.getenv("MOLTBOOK_API_KEY")
+    
+    if not API_KEY:
+        print("⚠️ Chave API não encontrada no .env ou variáveis de ambiente!")
+        print("   Configure MOLTBOOK_API_KEY para postagem automática.")
+    else:
+        intel = MoltbookIntelligence(API_KEY)
     
     print("\n🚀 Starting Moltbook Intelligence System...\n")
     
